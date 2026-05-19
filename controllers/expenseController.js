@@ -3,6 +3,7 @@ import { analyzeReceiptImage } from '../utils/geminiHelper.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { connectToDatabase } from '../utils/db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,6 +11,8 @@ const __dirname = path.dirname(__filename);
 // Upload image and analyze with Gemini
 export const uploadExpense = async (req, res) => {
   try {
+    await connectToDatabase();
+    
     if (!req.file) {
       return res.status(400).json({ error: 'No image provided. Please upload an image.' });
     }
@@ -77,6 +80,8 @@ export const uploadExpense = async (req, res) => {
 // Get all expenses
 export const getExpenses = async (req, res) => {
   try {
+    await connectToDatabase();
+    
     const { search, category, startDate, endDate, minAmount, maxAmount } = req.query;
     
     let query = {};
@@ -113,6 +118,7 @@ export const getExpenses = async (req, res) => {
 // Get single expense
 export const getExpenseById = async (req, res) => {
   try {
+    await connectToDatabase();
     const expense = await Expense.findById(req.params.id);
     if (!expense) return res.status(404).json({ error: 'Expense not found' });
     res.status(200).json(expense);
@@ -124,6 +130,7 @@ export const getExpenseById = async (req, res) => {
 // Update expense
 export const updateExpense = async (req, res) => {
   try {
+    await connectToDatabase();
     const updatedExpense = await Expense.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -139,6 +146,7 @@ export const updateExpense = async (req, res) => {
 // Delete expense
 export const deleteExpense = async (req, res) => {
   try {
+    await connectToDatabase();
     const expense = await Expense.findByIdAndDelete(req.params.id);
     if (!expense) return res.status(404).json({ error: 'Expense not found' });
     

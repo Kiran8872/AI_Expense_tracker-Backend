@@ -37,23 +37,8 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message || 'Something went wrong on the server' });
 });
 
-// Database connection
+// Database connection is now handled dynamically in controllers
 const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/expensetracker';
-
-if (!process.env.MONGODB_URI && process.env.VERCEL) {
-  console.error('CRITICAL ERROR: MONGODB_URI environment variable is missing on Vercel. Database connection will fail.');
-}
-
-mongoose.connect(MONGODB_URI, {
-  serverSelectionTimeoutMS: 5000, // Fail fast if can't connect (5s instead of 30s)
-})
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((error) => {
-    console.error('MongoDB connection error:', error);
-  });
 
 // Only start the listener if running locally (not on Vercel)
 if (!process.env.VERCEL) {
