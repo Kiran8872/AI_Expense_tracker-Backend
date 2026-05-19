@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Environment variables (never commit secrets)
+.env
+
+# Uploaded receipt images
+uploads/*
+!uploads/.gitkeep
+
+# npm cache and build
+clean/
+dist/
+
+# Logs
+logs/
+*.log
+
+# OS/Editor files
+.DS_Store
+.vscode/
+.idea/
