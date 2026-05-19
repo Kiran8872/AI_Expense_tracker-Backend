@@ -41,7 +41,13 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/expensetracker';
 
-mongoose.connect(MONGODB_URI)
+if (!process.env.MONGODB_URI && process.env.VERCEL) {
+  console.error('CRITICAL ERROR: MONGODB_URI environment variable is missing on Vercel. Database connection will fail.');
+}
+
+mongoose.connect(MONGODB_URI, {
+  serverSelectionTimeoutMS: 5000, // Fail fast if can't connect (5s instead of 30s)
+})
   .then(() => {
     console.log('Connected to MongoDB');
   })

@@ -15,7 +15,7 @@ const extractJSON = (text) => {
   }
 };
 
-const analyzeReceiptImage = async (imagePath, mimeType, apiKey) => {
+const analyzeReceiptImage = async (imageBase64, mimeType, apiKey) => {
   try {
     if (apiKey === 'your_gemini_api_key_here') {
       console.log('Using mock Gemini API response for testing.');
@@ -36,8 +36,7 @@ const analyzeReceiptImage = async (imagePath, mimeType, apiKey) => {
 
     const ai = new GoogleGenAI({ apiKey });
     
-    // Convert image to base64
-    const imageData = fs.readFileSync(imagePath).toString('base64');
+    const imageData = imageBase64;
     
     const prompt = `
     Analyze this receipt/invoice/bill image and extract the following information.

@@ -19,12 +19,12 @@ export const uploadExpense = async (req, res) => {
       return res.status(500).json({ error: 'GEMINI_API_KEY is not configured on the server.' });
     }
 
-    const imagePath = req.file.path;
+    const imageBase64 = req.file.buffer.toString('base64');
     const mimeType = req.file.mimetype;
-    const imageUrl = `/uploads/${req.file.filename}`;
+    const imageUrl = `data:${mimeType};base64,${imageBase64}`;
 
     // Analyze with Gemini
-    const { extractedData, rawText } = await analyzeReceiptImage(imagePath, mimeType, apiKey);
+    const { extractedData, rawText } = await analyzeReceiptImage(imageBase64, mimeType, apiKey);
 
     if (!extractedData) {
        return res.status(500).json({ error: 'Failed to extract data from image.' });
@@ -142,8 +142,8 @@ export const deleteExpense = async (req, res) => {
     const expense = await Expense.findByIdAndDelete(req.params.id);
     if (!expense) return res.status(404).json({ error: 'Expense not found' });
     
-    // Optionally delete the associated image file (non-blocking)
-    if (expense.imageUrl) {
+    // Optionally delete the associated image file (non-blocking) - Only if it's a local file path
+    if (expense.imageUrl && !expense.imageUrl.startsWith('data:')) {
       try {
         // imageUrl is stored as '/uploads/filename' — resolve relative to project root
         const relativePath = expense.imageUrl.startsWith('/')
